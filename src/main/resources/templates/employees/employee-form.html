@@ -18,6 +18,9 @@
     <form action="#" th:action="@{/employees/save}"
                      th:object="${employee}" method="POST">
 
+        <!-- Add hidden form field to handle update-->
+        <input type="hidden" th:field="*{id}"/>
+
         <input type="text" th:field="*{firstName}"
                class="form-control mb-4 col-4 w-25" placeholder="First name"/>
 
@@ -27,7 +30,7 @@
         <input type="text" th:field="*{email}"
                class="form-control mb-4 col-4 w-25" placeholder="Email">
 
-        <button type="submit" class="btn btn-info col-4">Save</button>
+        <button type="submit" class="btn btn-info col-4 w-25">Save</button>
 
     </form>
     <a th:href="@{/employees/list}">Back to Employee List</a>
