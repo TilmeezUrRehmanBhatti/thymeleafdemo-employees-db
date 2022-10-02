@@ -334,7 +334,8 @@ We need to add entries for Spring Security and Thymeleaf Security
    	</dependency>
 
 
-**CREATE BEANS FOR DATABASE ACCESS**
+CREATE BEANS FOR DATABASE ACCESS
+================================
 
 
 This Spring Boot project will make use of two different datasources
@@ -444,5 +445,43 @@ security.datasource.password=springstudent
 ```
 
 
-**CONFIGURE SPRING SECURITY FOR DATABASE AUTHENTICATION**
+CONFIGURE SPRING SECURITY FOR DATABASE AUTHENTICATION
+=====================================================
+
+Now that we have the Spring Security datasource set up, we need to use this datasource for authentication.
+
+1. Update Spring Security Configuration
+
+Update the file: DemoSecurityConfig.java to use this
+```JAVA
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    private  DataSource securityDataSource;
+  
+   // add a reference to our security data source
+
+    @Autowired
+    public SecurityConfig(DataSource securityDataSource) {
+        this.securityDataSource = securityDataSource;
+    }
+
+    @Bean
+    public UserDetailsManager userDetailsManager() {
+        return new JdbcUserDetailsManager(securityDataSource);
+    }
+
+
+
+```
+This injects the "securityDataSource" bean that was defined in the previous file: DemoDataSourceConfig.java. Then in the configure() method, we tell Spring Security to use this data source for JDBC authentication.
+
+The JdbcUserDetailsManager manages the users in a SQL database. It connects to the database directly through JDBC. This way, the JdbcUserDetailsManager is independent of any other framework or specification related to database connectivity.
+
+![clipboard.png](https://user-images.githubusercontent.com/80107049/193453798-45fd75b0-1db0-4464-8587-2038d25ce71b.png)
+
+**Why UserDetailsManager**
+
+In default, Spring only needs to find out the user’s details by using username, Spring does not need to do some operation on the user. However some applications needs more operational stuff, such as changing password, update the existing user etc.. In that case you should use a UserDetailsManager which extends UserDetailsService
 
