@@ -43,4 +43,17 @@ a {
     transition: 0.3s;
 }
 
+a:hover {
+    background-color: #a30a0a;
+    color: white;
+    transform: scale(1.3);
+    border-radius: 10px;
+    box-shadow: 4px 8px 16px 0 rgba(0, 0, 0, 0.2);
 
+}
+
+a:active {
+    background-color: #a30a0a;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
