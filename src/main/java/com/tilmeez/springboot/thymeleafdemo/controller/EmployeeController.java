@@ -79,5 +79,17 @@ public class EmployeeController {
         return "redirect:/employees/list";
     }
 
+    @GetMapping("/search")
+    public String search(@RequestParam("employeeName") String theName, Model thModel) {
+
+        List<Employee> theEmployees = employeeService.searchBy(theName);
+
+        // add to the spring model
+        thModel.addAttribute("employees", theEmployees);
+
+        // send to /employees/list
+        return "/employees/list-employees";
+    }
+
 
 }
