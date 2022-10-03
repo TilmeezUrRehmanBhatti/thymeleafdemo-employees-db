@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
 	<title>Access Denied</title>
+	<link rel="stylesheet" th:href="@{/css/denied.css}" />
+	
 </head>
 
 <body>
+	<!-- Video Background  -->
+    <video  id="video-background" loop muted autoplay>
+        <source th:src="@{/video/Access-Denied.mp4}" type="video/mp4">
+    </video>
 
-	<h2>Access Denied - You are not authorized to access this resource.</h2>
-
+	<div class="container">
+	<h3>Access Denied - You are not authorized to access this resource.</h2>
+		<button> <a th:href="@{/}">Back to Home Page</a></button>
+	</div>
 	<hr>
+	 
 	
-	<a th:href="@{/}">Back to Home Page</a>
 	
 </body>
 
