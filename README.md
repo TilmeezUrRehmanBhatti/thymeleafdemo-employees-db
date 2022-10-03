@@ -485,3 +485,85 @@ The JdbcUserDetailsManager manages the users in a SQL database. It connects to t
 
 In default, Spring only needs to find out the user’s details by using username, Spring does not need to do some operation on the user. However some applications needs more operational stuff, such as changing password, update the existing user etc.. In that case you should use a UserDetailsManager which extends UserDetailsService
 
+DISPLAY CONTENT BASED ON USER ROLE
+==================================
+
+In the application, we want to display content based on user role.
+
+- Employee role: users in this role will only be allowed to list employees.
+- Manager role: users in this role will be allowed to list, add and update employees.
+- Admin role: users in this role will be allowed to list, add, update and delete employees.
+
+These restrictions are currently in place with the code: DemoSecurityConfig.java
+```JAVA
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+      .authorizeRequests(configure ->
+                        configure
+                        .antMatchers("/employees/showForm*").hasAnyRole("MANAGER", "ADMIN")
+                        .antMatcher("/employees/save*").hasAnyRole("MANAGER", "ADMIN")
+                        .antMatcher("/employees/delete").hasRole("ADMIN")
+                        .antMatchers("/employees/**").hasRole("EMPLOYEE")
+                        .antMatchers("/resources/**").permitAll())
+      .formLogin(configure ->
+                 configure
+                 .loginPage("/showMyLoginPage")
+                 .loginProcessingUrl("/authenticateTheUser")
+                 .permitAll())
+      .logout(configure ->
+              configure
+              .permitAll())
+      .exceptionalHandling(configure ->
+                           configure
+                           .accessDenidedPage("/access-denied"))
+      .build();
+	}
+```
+We also, want to hide/display the links on the view page. For example, if the user has only the "EMPLOYEE" role, then we should only display links available for "EMPLOYEE" role.
+Links for "MANAGER" and "ADMIN" role should not be displayed for the "EMPLOYEE".
+
+We can make use of Thymeleaf Security to handle this for us.
+
+
+1. Add support for Thymeleaf Security
+   To use the Thymeleaf Security, we need to add the following to the XML Namespace
+
+File: list-employees.html
+```HTML
+<html lang="en" 
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+```
+Note the reference for xmlns:sec
+
+
+2. "Update" button
+   Only display the "Update" button for users with role of MANAGER OR ADMIN
+```XML
+					<div sec:authorize="hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')">
+
+						<!-- Add "update" button/link -->
+						<a th:href="@{/employees/showFormForUpdate(employeeId=${tempEmployee.id})}"
+						   class="btn btn-info btn-sm">
+							Update
+						</a>
+
+					</div>					
+```
+3. "Delete" buton
+
+Only display the "Delete" button for users with role of ADMIN
+```XML
+					<div sec:authorize="hasRole('ROLE_ADMIN')">  
+					
+						<!-- Add "delete" button/link -->					
+						<a th:href="@{/employees/delete(employeeId=${tempEmployee.id})}"
+						   class="btn btn-danger btn-sm"
+						   onclick="if (!(confirm('Are you sure you want to delete this employee?'))) return false">
+							Delete
+						</a>
+
+					</div>
+  ```
+					
