@@ -307,7 +307,7 @@ public class EmployeeController {
 
 
 | user id        | password           | roles  |
-| ------------- |:-------------:| -----:|
+| ------------- |:-------------:| :-----|
 | john   | test123 | ROLE_EMPLOYEE   | 
 | mary      | test123      |  ROLE_EMPLOYEE, ROLE_MANAGER|
 | susan | test123      |  ROLE_EMPLOYEE, ROLE_ADMIN |
