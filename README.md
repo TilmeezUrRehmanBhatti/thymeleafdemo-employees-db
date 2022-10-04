@@ -873,3 +873,60 @@ public class Role {
     }
 }
 ```
+
+Add custom validations to the User entity fields like password and email
+========================================================================
+
+We start with the email validator and make sure it’s well-formed. We’re going to be building a **custom validator** for that, as well as a custom validation **annotation** –let’s call that @ValidEmail.
+
+Here’s the email validation annotation and the custom validator:
+
+
+Custom Annotation for Email validation:
+
+```JAVA
+@Constraint(validatedBy = EmailValidator.class)
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ValidEmail {
+
+    // define default error messages
+    public String message() default "is required";
+
+    // define default group
+    public Class<?>[] groups() default {};
+
+    // define default payload
+    public Class<? extends Payload> [] payload() default {};
+}
+```
+
+The Custom EmailValidator:
+
+```JAVA
+public class EmailValidator implements ConstraintValidator<ValidEmail,String> {
+
+    private Pattern pattern;
+
+    private Matcher matcher;
+
+    // Email Regex – Strict Validation
+    private static final String EMAIL_PATTERN =  "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    @Override
+    public boolean isValid(final String email, final ConstraintValidatorContext constraintValidatorContext) {
+
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        if (email == null) {
+
+            return false;
+        }
+
+        matcher = pattern.matcher(email);
+
+        return matcher.matches();
+    }
+}
+```

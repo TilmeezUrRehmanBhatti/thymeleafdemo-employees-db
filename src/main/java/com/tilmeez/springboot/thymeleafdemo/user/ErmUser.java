@@ -1,5 +1,7 @@
 package com.tilmeez.springboot.thymeleafdemo.user;
 
+import com.tilmeez.springboot.thymeleafdemo.validation.ValidEmail;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
