@@ -930,3 +930,73 @@ public class EmailValidator implements ConstraintValidator<ValidEmail,String> {
     }
 }
 ```
+We also need a custom annotation and validator to make sure that the password and matchingPassword fields match up. Here, we are using the generic field matching validator. We can use this for multiple fields in an array format.
+
+Custom Annotation for Validating two fields:
+
+```JAVA
+@Constraint(validatedBy = FieldmatchValidator.class)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface FieldMatch {
+    String message() default "";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+
+    String first();
+
+    String second();
+
+    @Target({ElementType.TYPE,ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface List{
+        FieldMatch[] value();
+    }
+}
+```
+We can see our custom annotation also contains a List sub-interface for defining multiple FieldsMatch annotations on a class.
+
+The Custom FieldMatchValidator:
+
+```JAVA
+public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
+
+    private String firstFieldName;
+    private String secondFieldName;
+    private String message;
+
+
+    @Override
+    public void initialize(FieldMatch constraintAnnotation) {
+        firstFieldName = constraintAnnotation.first();
+        secondFieldName = constraintAnnotation.second();
+        message= constraintAnnotation.message();
+    }
+
+    @Override
+    public boolean isValid(final Object value, ConstraintValidatorContext constraintValidatorContext) {
+
+        boolean valid = true;
+
+        try {
+            final Object firstObj = new BeanWrapperImpl(value).getPropertyValue(firstFieldName);
+            final Object secondObj = new BeanWrapperImpl(value).getPropertyValue(secondFieldName);
+
+            valid = firstObj == null && secondObj == null || firstObj != null && firstObj.equals(secondObj);
+        } catch (final Exception ignore) {
+            // we can ignore
+        }
+        if (!valid) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate(message)
+                    .addPropertyNode(firstFieldName)
+                    .addConstraintViolation()
+                    .disableDefaultConstraintViolation();
+        }
+        return valid;
+    }
+}
+```
