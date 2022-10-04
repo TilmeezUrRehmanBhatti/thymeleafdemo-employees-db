@@ -563,5 +563,38 @@ Only display the "Delete" button for users with role of ADMIN
 						</a>
 
 					</div>
-  ```
-					
+```
+Spring Security User Registration - Employee User Details
+=========================================================
+
+
+**Define a BCryptPasswordEncoder and DaoAuthenticationProvider beans**
+
+In our security configuration file, SecurityConfig.java, we define a BcryptPasswordEncoder and DaoAuthenticationProvider beans. We assign the EmployeeService and PasswordEncoder to the DaoAuthenticationProvider.
+
+```JAVA
+    // bcrypt bean definition
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // authenticationProvider bean definition
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+
+        //set the custom employee details service
+        auth.setUserDetailsService(employeeService);
+
+        // set th password encoder
+        auth.setPasswordEncoder(passwordEncoder());
+
+        return auth;
+    }
+```
+
+We are assigning the custom user details and password encoder to the DaoAuthenticationProvider.
+
+https://www.javadevjournal.com/spring/password-encoding-in-spring-security/					

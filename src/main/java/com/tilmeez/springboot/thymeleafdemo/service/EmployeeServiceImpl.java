@@ -4,6 +4,8 @@ package com.tilmeez.springboot.thymeleafdemo.service;
 import com.tilmeez.springboot.thymeleafdemo.dao.EmployeeRepository;
 import com.tilmeez.springboot.thymeleafdemo.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,5 +62,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             results = findAll();
         }
         return results;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }

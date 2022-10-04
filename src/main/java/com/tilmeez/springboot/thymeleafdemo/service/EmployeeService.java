@@ -2,10 +2,11 @@ package com.tilmeez.springboot.thymeleafdemo.service;
 
 
 import com.tilmeez.springboot.thymeleafdemo.entity.Employee;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface EmployeeService {
+public interface EmployeeService extends UserDetailsService {
 
     public List<Employee> findAll();
 
