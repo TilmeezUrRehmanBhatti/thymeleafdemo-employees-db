@@ -17,4 +17,6 @@ public interface EmployeeService extends UserDetailsService {
     public void deleteById(int theId);
 
     public List<Employee> searchBy(String theName);
+
+    public Employee findByUserName(String userName);
 }

@@ -27,7 +27,7 @@ public class SecurityConfig {
     private EmployeeService employeeService;
 
     @Autowired
-    public SecurityConfig(@Qualifier("securityDataSource") DataSource securityDataSource) {
+    public SecurityConfig(DataSource securityDataSource) {
         this.securityDataSource = securityDataSource;
     }
 

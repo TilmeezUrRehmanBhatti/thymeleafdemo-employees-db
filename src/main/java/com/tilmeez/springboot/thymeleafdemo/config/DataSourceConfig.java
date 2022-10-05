@@ -16,14 +16,14 @@ import javax.sql.DataSource;
 @EnableJpaRepositories(basePackages = {"${spring.data.jpa.repository.packages}"})
 public class DataSourceConfig {
 
-    @Primary
+   /* @Primary
     @Bean
-    @ConfigurationProperties(prefix="app.datasource")
+    @ConfigurationProperties(prefix="security.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create().build();
 
-    }
+    }*/
 
     @Bean
     @ConfigurationProperties(prefix = "spring.data.jpa.entity")
