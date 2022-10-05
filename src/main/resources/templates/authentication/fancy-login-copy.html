@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <title>Login</title>
@@ -18,8 +18,10 @@
     ></script>
     <link rel="stylesheet" th:href="@{/css/stytle.css}" />
   </head>
+
   <body class="text-center">
     <main class="form-signin w-100 m-auto">
+
         <form th:action="@{/authenticateTheUser}"
         method="POST" class="form-horizontal">
          <!-- Place for messages: error, alert etc ... -->
@@ -65,6 +67,13 @@
                 <label for="floatingPassword">Password</label>
               </div>
               <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+
+            <div>
+                <a th:href="@{/register/showRegistrationForm}"
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Register New User</button>
+                </a>
+            </div>
+
         </form>
     </main>
 
