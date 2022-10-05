@@ -22,4 +22,6 @@ public interface EmployeeService extends UserDetailsService {
 
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+
+    Employee findByUserName(String userName);
 }

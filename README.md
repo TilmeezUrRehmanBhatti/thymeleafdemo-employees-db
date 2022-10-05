@@ -1000,3 +1000,134 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
     }
 }
 ```
+
+Create Registration Controller
+==============================
+
+The RegistrationController is responsible for registering a new user. It has two
+request mappings:
+1. /register/showRegistrationForm
+2. /register/processRegistrationForm
+   Both mappings are self-explanatory.
+
+**REGISTRATIONCONTROLLER**
+
+The coding for the controller is in the following file.
+```JAVA
+@Controller
+@RequestMapping("/register")
+public class RegistrationController {
+    
+}
+```
+
+Since this is a large file, I'll discuss it in smaller sections.
+
+**EmployeeSERVICE**
+
+In the RegistrationController, we inject the employeeService with the code below:
+```JAVA
+@Autowired
+private EmployeeService employeeService;
+```
+This is nothing but the service interface which extends EmployeeService. We are using this to find the user with the username and to create the user
+
+**INITBINDER**
+
+The @InitBinder is code that we've used before. It is used in the form validation
+process. Here we add support to trim empty strings to null.
+```JAVA
+@InitBinder
+public void initBinder(WebDataBinder dataBinder) {
+ 
+  StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+  
+  dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+}
+```
+
+**SHOW REGISTRATION FORM**
+
+The next section of code is the request mapping to show the registration form. We
+also create a ErmUser and add it as a model attribute.
+```JAVA
+@GetMapping("/showRegistrationForm")
+public String showMyLoginPage(Model theModel) {
+  
+  theModel.addAttribute("ermUser", new ErmUser());
+  
+  return "authentication/registration-form";
+}
+```
+
+**PROCESS REGISTRATION FORM**
+
+On the registration form, the user will enter their user id, password, matching password, first name, last name, email. The password will be entered as plain text. The data is then sent to the request mapping: /register/processRegistrationForm
+
+The processRegistrationForm() . At a high-level, this method will do the following:
+```JAVA
+@PostMapping("/processRegistrationForm")
+public String processRegistrationForm(
+
+  @Valid
+  @ModelAttribute("crmUser") ErmUser theErmUser, 
+  BindingResult theBindingResult, 
+  Model theModel) {
+ 
+  // form validation
+  
+  // check the database if user already exists
+  
+  // save user in the database
+  
+  return "authentication/registration-confirmation";
+}
+```
+Now let's break it down a bit and fill in the blanks.
+
+**FORM VALIDATION**
+
+The first section of code handles form validation.
+```JAVA
+// form validation
+if (theBindingResult.hasErrors()) {
+return "authentication/registration-form";
+}
+```
+This code is in place to make sure the user doesn't enter any invalid data.
+
+At the moment, our ErmUser.java class has validation annotations to check for
+empty fields, password and matching password matcher, email validations. This is an area for more improvement, we could add more robust validation rules here.
+
+**CHECK IF USER ALREADY EXISTS**
+
+Next, we need to perform additional validation on user name.
+```JAVA
+Employee existing = employeeService.findByUserName(userName);
+        if (existing != null) {
+            theModel.addAttribute("ermUser", new ErmUser());
+            theModel.addAttribute("registrationError", "User name already exists");
+
+            logger.warning("User name already exists");
+
+            return "authentication/registration-form";
+        }
+```
+This code checks the database to see if the user already exists (actual checking is done at Dao). Of course, we don't want to add users with same username. We've covered the validations, now we can get down to the real business of adding the user
+
+
+**STORE USER IN DATABASE**
+
+The final step is storing the user in the database.
+```JAVA
+ // create user account
+ employeeService.save(theErmUSer);
+```
+We make use of the employeeService again. We are using the JPA  to save the user.
+
+**RETURN CONFIRMATION PAGE**
+
+Once that is complete then we return to the registration confirmation page.
+```JAVA
+  return "authentication/registration-confirmation";
+```
