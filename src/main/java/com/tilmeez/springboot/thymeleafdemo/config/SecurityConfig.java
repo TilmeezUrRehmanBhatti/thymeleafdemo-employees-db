@@ -21,14 +21,16 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final DataSource securityDataSource;
+    private  DataSource securityDataSource;
+
+    private  EmployeeService employeeService;
+    private  CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    public SecurityConfig(DataSource securityDataSource) {
+    public SecurityConfig(DataSource securityDataSource, EmployeeService employeeService, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.securityDataSource = securityDataSource;
+        this.employeeService = employeeService;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
 
 
@@ -52,6 +54,7 @@ public class SecurityConfig {
                         configure
                                 .loginPage("/showMyLoginPage")
                                 .loginProcessingUrl("/authenticateTheUser")
+                                .successHandler(customAuthenticationSuccessHandler)
                                 .permitAll())
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(configure ->
@@ -75,8 +78,11 @@ public class SecurityConfig {
         //set the custom employee details service
         auth.setUserDetailsService(employeeService);
 
+
         // set th password encoder
         auth.setPasswordEncoder(passwordEncoder());
+
+
 
         return auth;
     }

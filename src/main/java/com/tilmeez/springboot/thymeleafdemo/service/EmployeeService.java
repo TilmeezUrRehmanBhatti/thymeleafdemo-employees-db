@@ -2,6 +2,7 @@ package com.tilmeez.springboot.thymeleafdemo.service;
 
 
 import com.tilmeez.springboot.thymeleafdemo.entity.Employee;
+import com.tilmeez.springboot.thymeleafdemo.user.ErmUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,8 +21,7 @@ public interface EmployeeService extends UserDetailsService {
 
     public List<Employee> searchBy(String theName);
 
-    @Override
-    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+    public Employee findByUserName(String userName);
 
-    Employee findByUserName(String userName);
+    public void save(ErmUser ermUser);
 }

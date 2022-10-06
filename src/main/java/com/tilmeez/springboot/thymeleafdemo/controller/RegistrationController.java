@@ -9,7 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 import java.util.logging.Logger;
@@ -17,15 +21,12 @@ import java.util.logging.Logger;
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
+    @Autowired
+    private  EmployeeService employeeService;
 
-    private final EmployeeService employeeService;
 
     private Logger logger = Logger.getLogger(getClass().getName());
 
-    @Autowired
-    public RegistrationController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
 
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
@@ -50,17 +51,16 @@ public class RegistrationController {
             Model theModel) {
 
         String userName = theErmUser.getUserName();
-        logger.info("process registration form for: " + userName);
+        logger.info("Processing registration form for: " + userName);
 
         // form validation
-        if (theBindingResult.hasErrors()) {
+        if (theBindingResult.hasErrors()){
             return "authentication/registration-form";
         }
 
-        return "authentication/registration-confirmation";
-
         // check the database if user already existed
         Employee existing = employeeService.findByUserName(userName);
+
         if (existing != null) {
             theModel.addAttribute("ermUser", new ErmUser());
             theModel.addAttribute("registrationError", "User name already exists");
@@ -77,5 +77,6 @@ public class RegistrationController {
 
         return "authentication/registration-confirmation";
     }
+
 
 }
