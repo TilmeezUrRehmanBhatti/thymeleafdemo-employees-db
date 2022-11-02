@@ -27,7 +27,9 @@ public class SecurityConfig {
     private  CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Autowired
-    public SecurityConfig(DataSource securityDataSource, EmployeeService employeeService, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+    public SecurityConfig(DataSource securityDataSource,
+                          EmployeeService employeeService,
+                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.securityDataSource = securityDataSource;
         this.employeeService = employeeService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;

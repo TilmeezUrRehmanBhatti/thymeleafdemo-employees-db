@@ -2,12 +2,15 @@ package com.tilmeez.springboot.thymeleafdemo.controller;
 
 import com.tilmeez.springboot.thymeleafdemo.entity.Employee;
 import com.tilmeez.springboot.thymeleafdemo.service.EmployeeService;
+import com.tilmeez.springboot.thymeleafdemo.user.ErmUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -30,33 +33,25 @@ public class EmployeeController {
         return "employees/list-employees";
     }
 
-    // add mapping for save
-    @GetMapping("/showFormForAdd")
-    public String showFormForAdd(Model theModel) {
-
-        // create model attribute to bind form data
-        Employee theEmployee = new Employee();
-
-        theModel.addAttribute("employee", theEmployee);
-
-        return "employees/employee-form";
-    }
 
     @GetMapping("/showFormForUpdate")
-    public String showFormForUpdate(@RequestParam("employeeId") int theId, Model theModel) {
+    public String showFormForUpdate(
+            @RequestParam("employeeId") int theId, Model theModel) {
 
         // get the employee from the service
         Employee theEmployee = employeeService.findById(theId);
+
 
         // set employee as a model attribute to pre-populate the form
         theModel.addAttribute("employee", theEmployee);
 
         // send over to our form
-        return "employees/employee-form";
+        return "employees/update-form";
     }
 
     @PostMapping("/save")
     public String saveEmployee(@ModelAttribute("employee") Employee theEmployee) {
+
 
         // save the employee
         employeeService.save(theEmployee);

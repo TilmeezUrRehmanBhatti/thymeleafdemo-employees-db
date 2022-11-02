@@ -54,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return theEmployee;
     }
 
+
     @Override
     public void save(Employee theEmployee) {
         employeeRepository.save(theEmployee);
@@ -103,6 +104,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Employee employee = employeeRepository.findByUserName(username);

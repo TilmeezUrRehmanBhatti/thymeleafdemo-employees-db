@@ -16,4 +16,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     public List<Employee> findByFirstNameContainsOrLastNameContainsAllIgnoreCase(String name, String lName);
 
     public Employee findByUserName(String userName);
+
+    public Employee findByEmail (String email);
 }

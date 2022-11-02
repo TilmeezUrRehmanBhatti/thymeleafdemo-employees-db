@@ -24,4 +24,5 @@ public interface EmployeeService extends UserDetailsService {
     public Employee findByUserName(String userName);
 
     public void save(ErmUser ermUser);
+
 }
