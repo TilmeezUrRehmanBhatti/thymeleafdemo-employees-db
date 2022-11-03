@@ -306,11 +306,11 @@ public class EmployeeController {
 ### SPRING BOOT, SPRING SECURITY AND THYMELEAF
 
 
-| user id        | password           | roles  |
-| ------------- |:-------------:| :-----|
-| john   | test123 | ROLE_EMPLOYEE   | 
-| mary      | test123      |  ROLE_EMPLOYEE, ROLE_MANAGER|
-| susan | test123      |  ROLE_EMPLOYEE, ROLE_ADMIN |
+| user id        | password | roles  |
+| ------------- |:--------:| :-----|
+| john   |  fun123  | ROLE_EMPLOYEE   | 
+| mary      | fun123  |  ROLE_EMPLOYEE, ROLE_MANAGER|
+| susan | fun123  |  ROLE_EMPLOYEE, ROLE_ADMIN |
 
 **MAVEN PROJECT UPDATES**
 
