@@ -306,11 +306,11 @@ public class EmployeeController {
 ### SPRING BOOT, SPRING SECURITY AND THYMELEAF
 
 
-| user id        | password           | roles  |
-| ------------- |:-------------:| :-----|
-| john   | test123 | ROLE_EMPLOYEE   | 
-| mary      | test123      |  ROLE_EMPLOYEE, ROLE_MANAGER|
-| susan | test123      |  ROLE_EMPLOYEE, ROLE_ADMIN |
+| user id        | password | roles  |
+| ------------- |:--------:| :-----|
+| john   |  fun123  | ROLE_EMPLOYEE   | 
+| mary      | fun123  |  ROLE_EMPLOYEE, ROLE_MANAGER|
+| susan | fun123  |  ROLE_EMPLOYEE, ROLE_ADMIN |
 
 **MAVEN PROJECT UPDATES**
 
@@ -563,5 +563,571 @@ Only display the "Delete" button for users with role of ADMIN
 						</a>
 
 					</div>
-  ```
-					
+```
+Spring Security User Registration - Employee User Details
+=========================================================
+
+
+**Define a BCryptPasswordEncoder and DaoAuthenticationProvider beans**
+
+In our security configuration file, SecurityConfig.java, we define a BcryptPasswordEncoder and DaoAuthenticationProvider beans. We assign the EmployeeService and PasswordEncoder to the DaoAuthenticationProvider.
+
+```JAVA
+    // bcrypt bean definition
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // authenticationProvider bean definition
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+
+        //set the custom employee details service
+        auth.setUserDetailsService(employeeService);
+
+        // set th password encoder
+        auth.setPasswordEncoder(passwordEncoder());
+
+        return auth;
+    }
+```
+
+We are assigning the custom user details and password encoder to the DaoAuthenticationProvider.
+
+https://www.javadevjournal.com/spring/password-encoding-in-spring-security/					
+
+
+Create a ERM User class
+=======================
+For our registration form, we are creating a user class with custom details for the ERM project. It will have the username, password, first name, last name and email. We are also adding annotations for validating the fields.
+
+```JAVA
+package com.tilmeez.springboot.thymeleafdemo.user;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+@FieldMatch.List({
+        @FieldMatch(first = "password",second="matchingPassword", message="The Password field must be matched" )
+})
+public class ErmUser {
+
+    @NotNull(message = "is required")
+    @Size(min = 1, message = "is required")
+    private String userName;
+
+    @NotNull(message = "is required")
+    @Size(min = 1,message = "is required")
+    private String password;
+
+    @NotNull(message = "is required")
+    @Size(min = 1,message = "is required")
+    private String matchingPassword;
+
+    @NotNull(message = "is required")
+    @Size(min = 1,message = "is required")
+    private String firstName;
+
+    @NotNull(message = "is required")
+    @Size(min = 1,message = "is required")
+    private String lastName;
+
+    @ValidEmail
+    @NotNull(message = "is required")
+    @Size(min = 1,message = "is required")
+    private String email;
+
+    public ErmUser() {
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getMatchingPassword() {
+        return matchingPassword;
+    }
+
+    public void setMatchingPassword(String matchingPassword) {
+        this.matchingPassword = matchingPassword;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}
+```
+Create Employee User Details entity classes (Employee, Role)
+=====================================================
+Creating the Employee and Role entity classes (We can use any name for these entities)
+
+```JAVA
+package com.tilmeez.springboot.thymeleafdemo.entity;
+
+import javax.persistence.*;
+import java.util.Collection;
+
+@Entity
+@Table(name = "employee")
+public class Employee {
+
+    // define fields
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "username")
+    private String userName;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "email")
+    private String email;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_roles",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
+
+    // define constructors
+
+    public Employee() {
+    }
+
+    public Employee(String userName, String password, String firstName, String lastName, String email) {
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
+
+    public Employee(String userName, String password, String firstName, String lastName, String email, Collection<Role> roles) {
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.roles = roles;
+    }
+
+    // define getter/setter
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    // define toString
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+}
+```
+
+```JAVA
+package com.tilmeez.springboot.thymeleafdemo.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "role")
+public class Role {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+}
+```
+
+Add custom validations to the User entity fields like password and email
+========================================================================
+
+We start with the email validator and make sure it’s well-formed. We’re going to be building a **custom validator** for that, as well as a custom validation **annotation** –let’s call that @ValidEmail.
+
+Here’s the email validation annotation and the custom validator:
+
+
+Custom Annotation for Email validation:
+
+```JAVA
+@Constraint(validatedBy = EmailValidator.class)
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ValidEmail {
+
+    // define default error messages
+    public String message() default "is required";
+
+    // define default group
+    public Class<?>[] groups() default {};
+
+    // define default payload
+    public Class<? extends Payload> [] payload() default {};
+}
+```
+
+The Custom EmailValidator:
+
+```JAVA
+public class EmailValidator implements ConstraintValidator<ValidEmail,String> {
+
+    private Pattern pattern;
+
+    private Matcher matcher;
+
+    // Email Regex – Strict Validation
+    private static final String EMAIL_PATTERN =  "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    @Override
+    public boolean isValid(final String email, final ConstraintValidatorContext constraintValidatorContext) {
+
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        if (email == null) {
+
+            return false;
+        }
+
+        matcher = pattern.matcher(email);
+
+        return matcher.matches();
+    }
+}
+```
+We also need a custom annotation and validator to make sure that the password and matchingPassword fields match up. Here, we are using the generic field matching validator. We can use this for multiple fields in an array format.
+
+Custom Annotation for Validating two fields:
+
+```JAVA
+@Constraint(validatedBy = FieldmatchValidator.class)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface FieldMatch {
+    String message() default "";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+
+    String first();
+
+    String second();
+
+    @Target({ElementType.TYPE,ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface List{
+        FieldMatch[] value();
+    }
+}
+```
+We can see our custom annotation also contains a List sub-interface for defining multiple FieldsMatch annotations on a class.
+
+The Custom FieldMatchValidator:
+
+```JAVA
+public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
+
+    private String firstFieldName;
+    private String secondFieldName;
+    private String message;
+
+
+    @Override
+    public void initialize(FieldMatch constraintAnnotation) {
+        firstFieldName = constraintAnnotation.first();
+        secondFieldName = constraintAnnotation.second();
+        message= constraintAnnotation.message();
+    }
+
+    @Override
+    public boolean isValid(final Object value, ConstraintValidatorContext constraintValidatorContext) {
+
+        boolean valid = true;
+
+        try {
+            final Object firstObj = new BeanWrapperImpl(value).getPropertyValue(firstFieldName);
+            final Object secondObj = new BeanWrapperImpl(value).getPropertyValue(secondFieldName);
+
+            valid = firstObj == null && secondObj == null || firstObj != null && firstObj.equals(secondObj);
+        } catch (final Exception ignore) {
+            // we can ignore
+        }
+        if (!valid) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate(message)
+                    .addPropertyNode(firstFieldName)
+                    .addConstraintViolation()
+                    .disableDefaultConstraintViolation();
+        }
+        return valid;
+    }
+}
+```
+
+Create Registration Controller
+==============================
+
+The RegistrationController is responsible for registering a new user. It has two
+request mappings:
+1. /register/showRegistrationForm
+2. /register/processRegistrationForm
+   Both mappings are self-explanatory.
+
+**REGISTRATIONCONTROLLER**
+
+The coding for the controller is in the following file.
+```JAVA
+@Controller
+@RequestMapping("/register")
+public class RegistrationController {
+    
+}
+```
+
+Since this is a large file, I'll discuss it in smaller sections.
+
+**EmployeeSERVICE**
+
+In the RegistrationController, we inject the employeeService with the code below:
+```JAVA
+@Autowired
+private EmployeeService employeeService;
+```
+This is nothing but the service interface which extends EmployeeService. We are using this to find the user with the username and to create the user
+
+**INITBINDER**
+
+The @InitBinder is code that we've used before. It is used in the form validation
+process. Here we add support to trim empty strings to null.
+```JAVA
+@InitBinder
+public void initBinder(WebDataBinder dataBinder) {
+ 
+  StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+  
+  dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+}
+```
+
+**SHOW REGISTRATION FORM**
+
+The next section of code is the request mapping to show the registration form. We
+also create a ErmUser and add it as a model attribute.
+```JAVA
+@GetMapping("/showRegistrationForm")
+public String showMyLoginPage(Model theModel) {
+  
+  theModel.addAttribute("ermUser", new ErmUser());
+  
+  return "authentication/registration-form";
+}
+```
+
+**PROCESS REGISTRATION FORM**
+
+On the registration form, the user will enter their user id, password, matching password, first name, last name, email. The password will be entered as plain text. The data is then sent to the request mapping: /register/processRegistrationForm
+
+The processRegistrationForm() . At a high-level, this method will do the following:
+```JAVA
+@PostMapping("/processRegistrationForm")
+public String processRegistrationForm(
+
+  @Valid
+  @ModelAttribute("crmUser") ErmUser theErmUser, 
+  BindingResult theBindingResult, 
+  Model theModel) {
+ 
+  // form validation
+  
+  // check the database if user already exists
+  
+  // save user in the database
+  
+  return "authentication/registration-confirmation";
+}
+```
+Now let's break it down a bit and fill in the blanks.
+
+**FORM VALIDATION**
+
+The first section of code handles form validation.
+```JAVA
+// form validation
+if (theBindingResult.hasErrors()) {
+return "authentication/registration-form";
+}
+```
+This code is in place to make sure the user doesn't enter any invalid data.
+
+At the moment, our ErmUser.java class has validation annotations to check for
+empty fields, password and matching password matcher, email validations. This is an area for more improvement, we could add more robust validation rules here.
+
+**CHECK IF USER ALREADY EXISTS**
+
+Next, we need to perform additional validation on user name.
+```JAVA
+Employee existing = employeeService.findByUserName(userName);
+        if (existing != null) {
+            theModel.addAttribute("ermUser", new ErmUser());
+            theModel.addAttribute("registrationError", "User name already exists");
+
+            logger.warning("User name already exists");
+
+            return "authentication/registration-form";
+        }
+```
+This code checks the database to see if the user already exists (actual checking is done at Dao). Of course, we don't want to add users with same username. We've covered the validations, now we can get down to the real business of adding the user
+
+
+**STORE USER IN DATABASE**
+
+The final step is storing the user in the database.
+```JAVA
+ // create user account
+ employeeService.save(theErmUSer);
+```
+We make use of the employeeService again. We are using the JPA  to save the user.
+
+**RETURN CONFIRMATION PAGE**
+
+Once that is complete then we return to the registration confirmation page.
+```JAVA
+  return "authentication/registration-confirmation";
+```

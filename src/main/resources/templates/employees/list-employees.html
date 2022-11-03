@@ -22,10 +22,6 @@
     </div>
 <!--Add a button-->
     <form th:action="@{/employees/search}" class="form-inline">
-        <a th:href="@{/employees/showFormForAdd}"
-           class="btn btn-primary btn-sm mb-3">
-            Add Employee
-        </a>
         <input class="form-control  ml-5 mr-sm-2 mb-3 w-25" type="search" name="employeeName" placeholder="Search by name" />
 
         <button class="btn btn-success mb-3" type="submit">Search</button>
