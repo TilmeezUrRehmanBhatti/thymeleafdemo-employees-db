@@ -1,3 +1,20 @@
+
+
+| user id        | password | roles  |
+| ------------- |:--------:| :-----|
+| john   |  fun123  | ROLE_EMPLOYEE   | 
+| mary      | fun123  |  ROLE_EMPLOYEE, ROLE_MANAGER|
+| susan | fun123  |  ROLE_EMPLOYEE, ROLE_ADMIN |
+
+
+![image](https://user-images.githubusercontent.com/80107049/200293486-4bc2afe5-9463-4f01-b7e0-a0167e12f371.png)
+
+![image](https://user-images.githubusercontent.com/80107049/200293563-161a08a0-b962-4705-9aad-dbdead656038.png)
+
+![image](https://user-images.githubusercontent.com/80107049/200293669-91cb9896-e266-4bf1-ba13-7a02ecd4c7f7.png)
+
+
+
 **Big Picture**
 
 <img src="https://user-images.githubusercontent.com/80107049/193446782-61782be6-a616-49e5-919e-0dd4cec948f0.png" width="500" />
